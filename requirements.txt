@@ -1,0 +1,11 @@
+fastapi
+pydantic
+sqlalchemy
+alembic
+uvicorn
+asyncpg
+greenlet
+python-decouple
+bcrypt
+passlib
+python-dotenv

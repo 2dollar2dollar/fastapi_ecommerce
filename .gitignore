@@ -1,0 +1,19 @@
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+
+# Database
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+# Alembic
+alembic.ini
