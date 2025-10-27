@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 from app.routers import categories, products, users, reviews
 
@@ -23,3 +24,9 @@ async def root():
     Корневой маршрут, подтверждающий, что API работает.
     """
     return {"message": "Добро пожаловать в API интернет-магазина!"}
+
+
+client = TestClient(app)
+response = client.get("/")
+print(response.status_code) # получим - 200
+print(response.json()) # получим {...}

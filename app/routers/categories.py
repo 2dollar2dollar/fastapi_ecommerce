@@ -30,11 +30,9 @@ async def create_category(category: CategoryCreate, db: AsyncSession = Depends(g
     """
     # Проверка существования parent_id, если указан
     if category.parent_id is not None:
-        stmt = select(CategoryModel).where(CategoryModel.id == category.parent_id,
-                                           CategoryModel.is_active == True)
-        result = await db.scalars(stmt)
-        parent = result.first()
-        if parent is None:
+        parent = await db.scalars(select(CategoryModel).where(CategoryModel.id == category.parent_id,
+                                           CategoryModel.is_active == True))
+        if parent.first() is None:
             raise HTTPException(status_code=400, detail="Parent category not found")
 
     # Создание новой категории
@@ -51,16 +49,13 @@ async def update_category(category_id: int, category: CategoryCreate, db: AsyncS
     Обновляет категорию по её ID.
     """
     # Проверяем существование категории
-    result = await db.scalars(select(CategoryModel).where(CategoryModel.id == category_id,
-                                       CategoryModel.is_active == True))
-    db_category = result.first()
-    if not db_category:
+    db_category = await db.scalars(select(CategoryModel).where(CategoryModel.id == category_id, CategoryModel.is_active == True))
+    if not db_category.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
 
     # Проверяем parent_id, если указан
     if category.parent_id is not None:
-        parent_result = await db.scalars(select(CategoryModel).where(CategoryModel.id == category.parent_id,
-                                                  CategoryModel.is_active == True))
+        parent_result = await db.scalars(select(CategoryModel).where(CategoryModel.id == category.parent_id, CategoryModel.is_active == True))
         parent = parent_result.first()
         if not parent:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Parent category not found")
@@ -83,10 +78,9 @@ async def delete_category(category_id: int, db: AsyncSession = Depends(get_async
     """
     Выполняет мягкое удаление категории по её ID, устанавливая is_active = False.
     """
-    result = await db.scalars(select(CategoryModel).where(CategoryModel.id == category_id,
+    db_category = await db.scalars(select(CategoryModel).where(CategoryModel.id == category_id,
                                        CategoryModel.is_active == True))
-    db_category = result.first()
-    if not db_category:
+    if not db_category.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
 
     await db.execute(
